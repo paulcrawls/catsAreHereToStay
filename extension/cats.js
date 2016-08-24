@@ -12,11 +12,13 @@
 			
 			self._replaced = {
 				images: [],
-				words: 0
+				words: []
 			};
 
 			self._replaceWords();
 			self._replaceImages();
+
+			console.log('cats loaded');
 		},
 
 		_wrapWord: function(word) {
@@ -99,17 +101,21 @@
 					}
 				};
 
-			$.each(wordPattern.plural, function(index, value) {
-				$.each(value, function(key, val) {
-					self.element.html(self.element.html().replace(val, self._wrapWord(wordPreset.plural[key])));
-					self._replaced.words++;
-				});
-			});
+			/** **/
+			$.each(wordPattern, function(typeKey, type) {
+				$.each(type, function(index, value) {
+					$.each(value, function(key, val) {
+						$('*:contains(' + val + ')').contents().each(function() {
+							if (this.nodeType == 3 && this.data.indexOf(val) !== -1) {
+								this.nodeValue = this.nodeValue.replace(val, wordPreset[typeKey][key]);
+								self._replaced.words.push(val);
+							}
+						});
 
-			$.each(wordPattern.singular, function(index, value) {
-				$.each(value, function(key, val) {
-					self.element.html(self.element.html().replace(val, self._wrapWord(wordPreset.singular[key])));
-					self._replaced.words++;
+						$('*:contains(' + val + ')').html(_, function() {
+
+						});
+					});
 				});
 			});
 
@@ -163,7 +169,7 @@
 					$div = $('<div class="inner"></div>'),
 					$h2 = $('<h2>Картинки, замененные на котиков</h2>'),
 					$clear = $('<div class="clear"></div>'),
-					$count = $('<h4>' + self._replaced.words + '</h4>')
+					$count = $('<h4>' + self._replaced.words.length + '</h4>')
 
 				self.$modal = $('<div class="dialog"></div>');
 				$div.append($h2.clone());
@@ -193,8 +199,5 @@
 	};
 	
 	$.widget('custom.catsJS', catsJS);
-
-	console.log('cats loaded');
-	$('body').catsJS();
 
 }());

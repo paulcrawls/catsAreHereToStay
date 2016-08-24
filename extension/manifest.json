@@ -14,7 +14,6 @@
     }
   ],
   "browser_action": {
-    "name": "Click to change the icon's color",
     "default_title": "Add more cats"
   },
   "web_accessible_resources": ["cats.jpg"],
