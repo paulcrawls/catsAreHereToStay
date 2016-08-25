@@ -1,12 +1,6 @@
-(function () {
-
-	var defaultOptions = {
-
-	};
+$(function() {
 
 	var catsJS = {
-		option: defaultOptions,
-		
 		_create: function() {
 			var self = this;
 			
@@ -14,112 +8,137 @@
 				images: [],
 				words: []
 			};
+			self._readyModal = false;
 
-			self._replaceWords();
-			self._replaceImages();
+			self.$modal = $('<div class="dialog none"></div>');
+			$(self.element).append(self.$modal);
 
-			console.log('cats loaded');
+			self._replaceDOM();
+			// console.log('cats loaded');
 		},
 
 		_wrapWord: function(word) {
 			return '<span class="replaced pointer">' + word + '</span>';
 		},
 
+		_getTextNodesIn: function(el, pattern) {
+			return $(el).find(':not(iframe)').addBack().contents().filter(function() {
+				return this.nodeType == 3 && this.data.indexOf(pattern) !== -1;
+			});
+		},
+
+		_replaceDOM: function() {
+			var self = this;
+
+			self._replaceWords();
+			self._replaceImages();
+			self._bindDomListener();
+		},
+
 		_replaceWords: function() {
 			var self = this,
-				/** Порядок падежей: Творительный, Именительный, Родительный, Дательный, Винительный, Предложный **/
+				/** Порядок падежей: Творительный, Родительный, Дательный, Предложный, Именительный, Винительный **/
 				wordPattern = {
-					singular: {
-						0: {
-							0: 'информацией',
-							1: 'информация',
-							2: 'информации',
-							3: 'информации',
-							4: 'информацию',
-							5: 'информации'
-						},
-						1: {
-							0: 'новостью',
-							1: 'новость',
-							2: 'новости',
-							3: 'новости',
-							4: 'новость',
-							5: 'новости'
-						},
-						2: {
-							0: 'комментарием',
-							1: 'комментарий',
-							2: 'комментария',
-							3: 'комментарию',
-							4: 'комментарий',
-							5: 'комментарии'
-						}
-					},
 					plural: {
 						0: {
 							0: 'информациями',
-							1: 'информации',
-							2: 'информаций',
-							3: 'информациям',
+							1: 'информаций',
+							2: 'информациям',
+							3: 'информациях',
 							4: 'информации',
-							5: 'информациях'
+							5: 'информации'
 						},
 						1: {
 							0: 'новостями',
-							1: 'новости',
-							2: 'новостей',
-							3: 'новостям',
+							1: 'новостей',
+							2: 'новостям',
+							3: 'новостях',
 							4: 'новости',
-							5: 'новостях'
+							5: 'новости'
 						},
 						2: {
 							0: 'комментариями',
-							1: 'комментарии',
-							2: 'комментариев',
-							3: 'комментариям',
+							1: 'комментариев',
+							2: 'комментариям',
+							3: 'комментариях',
 							4: 'комментарии',
-							5: 'комментариях'
+							5: 'комментарии'
+						}
+					},
+					singular: {
+						0: {
+							0: 'информацией',
+							1: 'информации',
+							2: 'информации',
+							3: 'информации',
+							4: 'информация',
+							5: 'информацию'
+						},
+						1: {
+							0: 'новостью',
+							1: 'новости',
+							2: 'новости',
+							3: 'новости',
+							4: 'новость',
+							5: 'новость'
+						},
+						2: {
+							0: 'комментарием',
+							1: 'комментария',
+							2: 'комментарию',
+							3: 'комментарии',
+							4: 'комментарий',
+							5: 'комментарий'
 						}
 					}
 				},
 				wordPreset = {
-					singular: {
-						0: 'котиком',
-						1: 'котик',
-						2: 'котика',
-						3: 'котику',
-						4: 'котика',
-						5: 'котике'
-					},
 					plural: {
 						0: 'котиками',
-						1: 'котики',
-						2: 'котиков',
-						3: 'котикам',
-						4: 'котиков',
-						5: 'котиках'
+						1: 'котиков',
+						2: 'котикам',
+						3: 'котиках',
+						4: 'котики',
+						5: 'котиков'
+					},
+					singular: {
+						0: 'котиком',
+						1: 'котика',
+						2: 'котику',
+						3: 'котике',
+						4: 'котик',
+						5: 'котика'
 					}
 				};
 
-			/** **/
+			/** find words from pattern and mark all the nodes where these findings occurred **/
 			$.each(wordPattern, function(typeKey, type) {
 				$.each(type, function(index, value) {
-					$.each(value, function(key, val) {
-						$('*:contains(' + val + ')').contents().each(function() {
-							if (this.nodeType == 3 && this.data.indexOf(val) !== -1) {
-								this.nodeValue = this.nodeValue.replace(val, wordPreset[typeKey][key]);
-								self._replaced.words.push(val);
-							}
-						});
-
-						$('*:contains(' + val + ')').html(_, function() {
-
+					$.each(value, function(key, pattern) {
+						var allTextNodes = self._getTextNodesIn($(self.element), pattern);
+						$.each(allTextNodes, function() {
+							this.nodeValue = this.nodeValue.replace(pattern, wordPreset[typeKey][key]);
+							$(this).wrap('<span data-replaced="true"></span>');
+							self._replaced.words.push(pattern);
 						});
 					});
 				});
 			});
 
-			$('.replaced').on('mousedown', function(e) {
+			/** deal with marked nodes **/
+			$.each(wordPreset, function(i, type) {
+				$.each(type, function(key, pattern) {
+					$('[data-replaced="true"]').html(function(_, html) {
+						return html.replace(pattern, self._wrapWord(pattern));
+					});
+				});
+			});
+
+			$(self.element).find('span.replaced.pointer > span.replaced.pointer').each(function() {
+				$(this).parent().html($(this).parent().text());
+			});
+
+			$('.replaced.pointer').on('mousedown', function(e) {
 				if (e.which == 3) {
 					self._openModal();
 				}
@@ -138,23 +157,25 @@
 					height = $img.height(),
 					aspects = [4 / 2],
 					passable = true;
-					
-				if (width > 100 && height > 100) {
-					$.each(aspects, function() {
-						if (width / height > parseFloat(this) || height / width < 1 / parseFloat(this)) {
-							passable = false;
-							return false;
-						}
-					});
-					
-					if (passable) {
-						self._replaced.images.push($img.clone());
-						$img.prop('src', url).prop('title', title).prop('alt', title).addClass('pointer');
-						$img.on('mousedown', function(e) {
-							if (e.which == 3) {
-								self._openModal();
+
+				if (!$img.data('cat')) {
+					if (width > 100 && height > 100) {
+						$.each(aspects, function () {
+							if (width / height > parseFloat(this) || height / width < 1 / parseFloat(this)) {
+								passable = false;
+								return false;
 							}
 						});
+
+						if (passable) {
+							self._replaced.images.push($img.clone());
+							$img.prop('src', url).prop('title', title).prop('alt', title).addClass('pointer').data('cat', true);
+							$img.on('mousedown', function (e) {
+								if (e.which == 3) {
+									self._openModal();
+								}
+							});
+						}
 					}
 				}
 			});
@@ -162,39 +183,61 @@
 		
 		_openModal: function() {
 			var self = this;
+			console.log(1);
 			
-			/** create if non-existant **/
-			if (!self.$modal) {
+			/** fill if empty **/
+			if (!self._readyModal) {
+				self.$modal.empty();
+
+				console.log(2);
 				var $closeButton = $('<button>Закрыть</button>'),
 					$div = $('<div class="inner"></div>'),
 					$h2 = $('<h2>Картинки, замененные на котиков</h2>'),
 					$clear = $('<div class="clear"></div>'),
 					$count = $('<h4>' + self._replaced.words.length + '</h4>')
 
-				self.$modal = $('<div class="dialog"></div>');
+				console.log(3);
 				$div.append($h2.clone());
 				$div.append($clear);
+				console.log(4);
 				$.each(self._replaced.images, function(index, value) {
-					value.removeClass('right').addClass('left');
+					value.removeClass('right').addClass('left').data('cat', true);
 					$div.append(value);
 				});
 				$div.append($clear);
+				console.log(5);
 				
 				$h2.text('Количество текстовых котиков:');
 				$div.append($h2);
 				$div.append($count);
+				console.log(6);
 				
 				self.$modal.append($div);
 				self.$modal.append($closeButton);
-				$('body').append(self.$modal);
+				self.$modal.removeClass('none');
+				console.log(7);
 				
 				$closeButton.on('click', function() {
 					self.$modal.addClass('none');
 				});
+				console.log(8);
+
+				self._readyModal = true;
 			} /** open otherwise **/
 				else {
 				self.$modal.removeClass('none');
 			}
+		},
+
+		_bindDomListener: function() {
+			var self = this;
+
+			$(self.element).one("DOMSubtreeModified", function() {
+				if (self._readyModal) {
+					self._readyModal = false;
+				}
+				self._replaceDOM();
+			});
 		}
 	};
 	

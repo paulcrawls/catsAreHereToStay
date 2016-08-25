@@ -1,0 +1,56 @@
+.pointer {
+    cursor: pointer;
+}
+
+.none {
+    display: none;
+}
+
+.dialog {
+    position: fixed;
+    top: 10px;
+    background: lightgray;
+    padding: 10px 10px 40px 10px;
+    right: 10px;
+    left: 10px;
+    bottom: 10px;
+    z-index: 99999;
+}
+
+.dialog .inner {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.dialog h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 15px 0;
+}
+
+.dialog button {
+    background: gray;
+    border: 1px solid darkgray;
+    padding: 5px;
+}
+
+.clear {
+    display: block;
+    clear: both;
+}
+
+.dialog button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.replaced {
+    color: cadetblue;
+    text-decoration: underline;
+}
+
+.replaced:hover {
+    text-decoration: none;
+}
