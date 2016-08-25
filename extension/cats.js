@@ -3,7 +3,7 @@ $(function() {
 	var catsJS = {
 		_create: function() {
 			var self = this;
-			
+
 			self._replaced = {
 				images: [],
 				words: []
@@ -37,79 +37,79 @@ $(function() {
 
 		_replaceWords: function() {
 			var self = this,
-				/** Порядок падежей: Творительный, Родительный, Дательный, Предложный, Именительный, Винительный **/
-				wordPattern = {
-					plural: {
-						0: {
-							0: 'информациями',
-							1: 'информаций',
-							2: 'информациям',
-							3: 'информациях',
-							4: 'информации',
-							5: 'информации'
+					/** Порядок падежей: Творительный, Родительный, Дательный, Предложный, Именительный, Винительный **/
+					wordPattern = {
+						plural: {
+							0: {
+								0: 'информациями',
+								1: 'информаций',
+								2: 'информациям',
+								3: 'информациях',
+								4: 'информации',
+								5: 'информации'
+							},
+							1: {
+								0: 'новостями',
+								1: 'новостей',
+								2: 'новостям',
+								3: 'новостях',
+								4: 'новости',
+								5: 'новости'
+							},
+							2: {
+								0: 'комментариями',
+								1: 'комментариев',
+								2: 'комментариям',
+								3: 'комментариях',
+								4: 'комментарии',
+								5: 'комментарии'
+							}
 						},
-						1: {
-							0: 'новостями',
-							1: 'новостей',
-							2: 'новостям',
-							3: 'новостях',
-							4: 'новости',
-							5: 'новости'
-						},
-						2: {
-							0: 'комментариями',
-							1: 'комментариев',
-							2: 'комментариям',
-							3: 'комментариях',
-							4: 'комментарии',
-							5: 'комментарии'
+						singular: {
+							0: {
+								0: 'информацией',
+								1: 'информации',
+								2: 'информации',
+								3: 'информации',
+								4: 'информация',
+								5: 'информацию'
+							},
+							1: {
+								0: 'новостью',
+								1: 'новости',
+								2: 'новости',
+								3: 'новости',
+								4: 'новость',
+								5: 'новость'
+							},
+							2: {
+								0: 'комментарием',
+								1: 'комментария',
+								2: 'комментарию',
+								3: 'комментарии',
+								4: 'комментарий',
+								5: 'комментарий'
+							}
 						}
 					},
-					singular: {
-						0: {
-							0: 'информацией',
-							1: 'информации',
-							2: 'информации',
-							3: 'информации',
-							4: 'информация',
-							5: 'информацию'
+					wordPreset = {
+						plural: {
+							0: 'котиками',
+							1: 'котиков',
+							2: 'котикам',
+							3: 'котиках',
+							4: 'котики',
+							5: 'котиков'
 						},
-						1: {
-							0: 'новостью',
-							1: 'новости',
-							2: 'новости',
-							3: 'новости',
-							4: 'новость',
-							5: 'новость'
-						},
-						2: {
-							0: 'комментарием',
-							1: 'комментария',
-							2: 'комментарию',
-							3: 'комментарии',
-							4: 'комментарий',
-							5: 'комментарий'
+						singular: {
+							0: 'котиком',
+							1: 'котика',
+							2: 'котику',
+							3: 'котике',
+							4: 'котик',
+							5: 'котика'
 						}
-					}
-				},
-				wordPreset = {
-					plural: {
-						0: 'котиками',
-						1: 'котиков',
-						2: 'котикам',
-						3: 'котиках',
-						4: 'котики',
-						5: 'котиков'
-					},
-					singular: {
-						0: 'котиком',
-						1: 'котика',
-						2: 'котику',
-						3: 'котике',
-						4: 'котик',
-						5: 'котика'
-					}
-				};
+					};
 
 			/** find words from pattern and mark all the nodes where these findings occurred **/
 			$.each(wordPattern, function(typeKey, type) {
@@ -144,23 +144,23 @@ $(function() {
 				}
 			});
 		},
-		
+
 		_replaceImages: function() {
 			var self = this,
-				$images = self.element.find('img'),
-				url = chrome.extension.getURL('cats.jpg'),
-				title = 'cats!';
+					$images = self.element.find('img'),
+					url = chrome.extension.getURL('cats.jpg'),
+					title = 'cats!';
 
 			$.each($images, function() {
 				var $img = $(this),
-					width = $img.width(),
-					height = $img.height(),
-					aspects = [4 / 2],
-					passable = true;
+						width = $img.width(),
+						height = $img.height(),
+						aspects = [4 / 2],
+						passable = true;
 
 				if (!$img.data('cat')) {
 					if (width > 100 && height > 100) {
-						$.each(aspects, function () {
+						$.each(aspects, function() {
 							if (width / height > parseFloat(this) || height / width < 1 / parseFloat(this)) {
 								passable = false;
 								return false;
@@ -170,7 +170,7 @@ $(function() {
 						if (passable) {
 							self._replaced.images.push($img.clone());
 							$img.prop('src', url).prop('title', title).prop('alt', title).addClass('pointer').data('cat', true);
-							$img.on('mousedown', function (e) {
+							$img.on('mousedown', function(e) {
 								if (e.which == 3) {
 									self._openModal();
 								}
@@ -180,51 +180,42 @@ $(function() {
 				}
 			});
 		},
-		
+
 		_openModal: function() {
 			var self = this;
-			console.log(1);
-			
+
 			/** fill if empty **/
 			if (!self._readyModal) {
 				self.$modal.empty();
-
-				console.log(2);
 				var $closeButton = $('<button>Закрыть</button>'),
-					$div = $('<div class="inner"></div>'),
-					$h2 = $('<h2>Картинки, замененные на котиков</h2>'),
-					$clear = $('<div class="clear"></div>'),
-					$count = $('<h4>' + self._replaced.words.length + '</h4>')
+						$div = $('<div class="inner"></div>'),
+						$h2 = $('<h2>Картинки, замененные на котиков</h2>'),
+						$clear = $('<div class="clear"></div>'),
+						$count = $('<h4>' + self._replaced.words.length + '</h4>')
 
-				console.log(3);
 				$div.append($h2.clone());
 				$div.append($clear);
-				console.log(4);
 				$.each(self._replaced.images, function(index, value) {
 					value.removeClass('right').addClass('left').data('cat', true);
 					$div.append(value);
 				});
 				$div.append($clear);
-				console.log(5);
-				
+
 				$h2.text('Количество текстовых котиков:');
 				$div.append($h2);
 				$div.append($count);
-				console.log(6);
-				
+
 				self.$modal.append($div);
 				self.$modal.append($closeButton);
 				self.$modal.removeClass('none');
-				console.log(7);
-				
+
 				$closeButton.on('click', function() {
 					self.$modal.addClass('none');
 				});
-				console.log(8);
 
 				self._readyModal = true;
 			} /** open otherwise **/
-				else {
+			else {
 				self.$modal.removeClass('none');
 			}
 		},
@@ -240,7 +231,7 @@ $(function() {
 			});
 		}
 	};
-	
+
 	$.widget('custom.catsJS', catsJS);
 
 }());
