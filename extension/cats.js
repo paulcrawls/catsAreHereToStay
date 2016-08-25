@@ -21,9 +21,16 @@ $(function() {
 			return '<span class="replaced pointer">' + word + '</span>';
 		},
 
+		_uppercasedFirstLetter: function(string) {
+			return string.substr(0,1).toUpperCase() + string.substr(1);
+		},
+
 		_getTextNodesIn: function(el, pattern) {
+			var self = this;
+
 			return $(el).find(':not(iframe)').addBack().contents().filter(function() {
-				return this.nodeType == 3 && this.data.indexOf(pattern) !== -1;
+				return this.nodeType == 3 && this.data.indexOf(pattern) !== -1 ||
+						this.nodeType == 3 && this.data.indexOf(self._uppercasedFirstLetter(pattern)) !== -1;
 			});
 		},
 
@@ -118,6 +125,7 @@ $(function() {
 						var allTextNodes = self._getTextNodesIn($(self.element), pattern);
 						$.each(allTextNodes, function() {
 							this.nodeValue = this.nodeValue.replace(pattern, wordPreset[typeKey][key]);
+							this.nodeValue = this.nodeValue.replace(self._uppercasedFirstLetter(pattern), self._uppercasedFirstLetter(wordPreset[typeKey][key]));
 							$(this).wrap('<span data-replaced="true"></span>');
 							self._replaced.words.push(pattern);
 						});
