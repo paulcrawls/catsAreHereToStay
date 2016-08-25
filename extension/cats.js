@@ -196,10 +196,10 @@ $(function() {
 			if (!self._readyModal) {
 				self.$modal.empty();
 				var $closeButton = $('<button>Закрыть</button>'),
-						$div = $('<div class="inner"></div>'),
-						$h2 = $('<h2>Картинки, замененные на котиков</h2>'),
-						$clear = $('<div class="clear"></div>'),
-						$count = $('<h4>' + self._replaced.words.length + '</h4>')
+					$div = $('<div class="inner"></div>'),
+					$h2 = $('<h2>Картинки, замененные на котиков</h2>'),
+					$clear = $('<div class="clear"></div>'),
+					$count = $('<h4>' + self._replaced.words.length + '</h4>');
 
 				$div.append($h2.clone());
 				$div.append($clear);
@@ -208,19 +208,15 @@ $(function() {
 					$div.append(value);
 				});
 				$div.append($clear);
-
 				$h2.text('Количество текстовых котиков:');
 				$div.append($h2);
 				$div.append($count);
-
 				self.$modal.append($div);
 				self.$modal.append($closeButton);
 				self.$modal.removeClass('none');
-
 				$closeButton.on('click', function() {
 					self.$modal.addClass('none');
 				});
-
 				self._readyModal = true;
 			} /** open otherwise **/
 			else {
